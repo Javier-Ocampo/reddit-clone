@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { MenuIcon , HomeIcon, ChevronDownIcon, SearchIcon } from '@heroicons/react/solid';
 import { BellIcon, ChatIcon, GlobeIcon, PlusIcon, SparklesIcon, SpeakerphoneIcon, VideoCameraIcon  } from '@heroicons/react/outline';
@@ -9,13 +10,15 @@ import img23l from '../public/images/23l.webp';
 const Header: React.FC<{}> = () => {
   const { data: session } = useSession();
   return (
-    <div className='sticky top-0 z-50 flex bg-white px-4 py-2 shadow-sm'>
+    <div className='sticky top-0 z-50 flex items-center bg-white px-4 py-2 shadow-sm'>
       <div className='relative h-10 w-20 flex-shrink-0 cursor-pointer'>
-        <Image
-          objectFit='contain'
-          src={imgfqy}
-          layout='fill'
-        />
+        <Link href='/'>
+          <Image
+            objectFit='contain'
+            src="https://links.javierocampo.net/fqy.webp"
+            layout='fill'
+          />
+        </Link>
       </div>
       <div className='mx-7 flex items-center xl:min-w-[300px]'>
         <HomeIcon className='h-5 w-5' />
@@ -46,7 +49,7 @@ const Header: React.FC<{}> = () => {
         className='hidden curso-pointer items-center space-x-2 border border-gray-200 p-2 lg:flex'
       >
         <div className='relative h-5 w-5 flex-shrink-0'>
-          <Image objectFit='contain' src={img23l} layout='fill' alt='' />
+          <Image objectFit='contain' src="https://links.javierocampo.net/23l.webp" layout='fill' alt='' />
         </div>
         <div className='flex-1 text-xs'>
           <p className='truncate'>{session?.user?.name}</p>

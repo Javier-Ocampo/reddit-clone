@@ -7,7 +7,7 @@ import { LinkIcon, PhotographIcon } from '@heroicons/react/outline';
 import toast from 'react-hot-toast';
 import Avatar from '../components/Avatar';
 import { ADD_POST, ADD_SUBREDDIT } from '../graphql/mutations';
-import { GET_SUBREDDIT_BY_TOPIC } from '../graphql/queries';
+import { GET_ALL_POSTS, GET_SUBREDDIT_BY_TOPIC } from '../graphql/queries';
 
 type FormData = {
   postTitle: string,
@@ -16,9 +16,15 @@ type FormData = {
   subreddit: string,
 }
 
-const PostBox = () => {
+type Props = {
+  subreddit?: string,
+}
+
+const PostBox = ({ subreddit }: Props) => {
   const { data: session } = useSession();
-  const [addPost] = useMutation(ADD_POST);
+  const [addPost] = useMutation(ADD_POST, {
+    refetchQueries: [GET_ALL_POSTS, 'getPostList'],
+  });
   const [addSubreddit] = useMutation(ADD_SUBREDDIT);
   const [imageBoxOpen, setImageBoxOpen] = useState(false);
   const { register, setValue, handleSubmit, watch, formState: { errors } } = useForm<FormData>();
@@ -31,7 +37,7 @@ const PostBox = () => {
       const { data: { getSubredditListByTopic } } = await client.query({
         query: GET_SUBREDDIT_BY_TOPIC,
         variables: {
-          topic: formData.subreddit
+          topic: subreddit || formData.subreddit
         }
       })
       const subredditExists = getSubredditListByTopic.length > 0;
@@ -86,7 +92,7 @@ const PostBox = () => {
   })
 
   return (
-    <form onSubmit={onSubmit} className='sticky top-16 z-50 rounded-md border border-gray-300 bg-white p-2'>
+    <form onSubmit={onSubmit} className='sticky top-20 z-50 rounded-md border border-gray-300 bg-white p-2'>
       <div className='flex items-center space-x-3'>
         <Avatar />
         <input
@@ -94,7 +100,7 @@ const PostBox = () => {
           disabled={!session}
           className='flex-1 rounded-md bg-gray-50 p-2 pl-5 outline-none'
           type="text"
-          placeholder={session ? 'Create a post by entering a title' : 'Login to create a post'}
+          placeholder={session ? subreddit ? `Create a post in r/${subreddit}` : 'Create a post by entering a title' : 'Login to create a post'}
         />
         <PhotographIcon onClick={() => setImageBoxOpen(!imageBoxOpen)} className={`h-6 cursor-pointer text-gray-300 ${imageBoxOpen && 'text-blue-300'}`} />
         <LinkIcon className='h-6 text-gray-300' />
@@ -110,7 +116,8 @@ const PostBox = () => {
               placeholder='Text (optional)'
             />
           </div>
-          <div className='flex items-center px-2'>
+          {!subreddit && (
+            <div className='flex items-center px-2'>
             <p className='min-w-[90px]'>Subreddit:</p>
             <input
               className='m-2 flex-1 bg-blue-50 p-2 outline-none'
@@ -119,6 +126,8 @@ const PostBox = () => {
               placeholder='i.e. reactjs'
             />
           </div>
+          )}
+          
           {imageBoxOpen && (
             <div className='flex items-center px-2'>
             <p className='min-w-[90px]'>Image URL:</p>
