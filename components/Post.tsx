@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { ArrowDownIcon, ArrowUpIcon, BookmarkIcon, ChatAltIcon, DotsHorizontalIcon, GiftIcon, ShareIcon } from '@heroicons/react/outline';
 import TimeAgo from 'react-timeago';
 import { Jelly } from '@uiball/loaders';
@@ -10,6 +11,9 @@ type Props = {
 }
 
 const Post = ({ post }: Props) => {
+  const { data: session } = useSession();
+
+  const upVote = async (isUpvote: boolean) => {};
 
   if (!post) {
     return (
