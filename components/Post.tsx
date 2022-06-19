@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { useQuery } from '@apollo/client';
 import { ArrowDownIcon, ArrowUpIcon, BookmarkIcon, ChatAltIcon, DotsHorizontalIcon, GiftIcon, ShareIcon } from '@heroicons/react/outline';
 import TimeAgo from 'react-timeago';
 import { Jelly } from '@uiball/loaders';
 import toast from 'react-hot-toast';
-import Avatar from '../components/Avatar'
+import Avatar from '../components/Avatar';
+import { GET_ALL_VOTES_BY_POST_ID } from '../graphql/queries';
 
 type Props = {
   post: Post
@@ -14,10 +16,15 @@ type Props = {
 const Post = ({ post }: Props) => {
   const [vote, setVote] = useState();
   const { data: session } = useSession();
+  const { data, loading } = useQuery(GET_ALL_VOTES_BY_POST_ID, {
+    variables: {
+      post_id: post?.id,
+    }
+  })
 
   const upVote = async (isUpvote: boolean) => {
     if (!session) {
-      toast("You must be logged in to vote", { type: "error" });
+      toast("You must be logged in to vote");
       return;
     }
   };
